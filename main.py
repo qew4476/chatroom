@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from starlette.endpoints import WebSocketEndpoint, HTTPEndpoint
 from starlette.responses import HTMLResponse
 from starlette.routing import Route, WebSocketRoute
-from userID import info
+# from userID import info
 
 html = """
 <!DOCTYPE html>
@@ -113,13 +113,14 @@ class Echo(WebSocketEndpoint):
             await info[wbs][1].send_text(f"{info[socket_only][0]}: {data}")
 
     # disconnect
-    async def on_disconnect(self, websocket, close_code):
+    async def disconnect(self, websocket, close_code):
         socket_only = await self.alter_socket(websocket)
         info.pop(socket_only)
         print(info)
         pass
 
 
+info={}
 routes = [Route("/", Homepage), WebSocketRoute("/ws", Echo)]
 
 app = FastAPI(routes=routes)
