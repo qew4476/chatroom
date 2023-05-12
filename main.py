@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from starlette.endpoints import WebSocketEndpoint, HTTPEndpoint
 from starlette.responses import HTMLResponse
 from starlette.routing import Route, WebSocketRoute
-# from userID import info
 
 html = """
 <!DOCTYPE html>
@@ -97,30 +96,30 @@ class Echo(WebSocketEndpoint):
 
         socket_only = await self.alter_socket(websocket)
         # save ID and socket
-        info[socket_only] = [f"{name}", websocket]
+        userdata[socket_only] = [f"{name}", websocket]
 
         # Tell everyone that someone has joined
-        for wbs in info:
-            await info[wbs][1].send_text(f"{info[socket_only][0]} joined the chatroom")
+        for wbs in userdata:
+            await userdata[wbs][1].send_text(f"{userdata[socket_only][0]} joined the chatroom")
 
-        print(info)
+        print(userdata)
 
     # receive
     async def on_receive(self, websocket, data):
         socket_only = await self.alter_socket(websocket)
 
-        for wbs in info:
-            await info[wbs][1].send_text(f"{info[socket_only][0]}: {data}")
+        for wbs in userdata:
+            await userdata[wbs][1].send_text(f"{userdata[socket_only][0]}: {data}")
 
     # disconnect
     async def disconnect(self, websocket, close_code):
         socket_only = await self.alter_socket(websocket)
-        info.pop(socket_only)
-        print(info)
+        userdata.pop(socket_only)
+        print(userdata)
         pass
 
 
-info={}
+userdata={}
 routes = [Route("/", Homepage), WebSocketRoute("/ws", Echo)]
 
 app = FastAPI(routes=routes)
